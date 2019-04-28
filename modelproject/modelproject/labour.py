@@ -41,10 +41,7 @@ R0 =w*h + A     # R0 is potential income if all time is spent
                 # working, h is the hrs worked in a week, and A
                 # is non labour income
 def budget(c,l):
-    """
-
-    """
- return slack=R0 - w*l + - C #, w is wage rate for working, C and l is
+    return slack=R0 - w*l + - C #, w is wage rate for working, C and l is
                 # consumption and lesiure respectively.
 budget_con={'type':'eq', 'fun'=budget}
 

@@ -14,7 +14,7 @@ alpha = sm.symbols('alpha') # Elasticity of utility wrt. leisure
 beta = sm.symbols('beta') # Elasticity of utility wrt. consumption
 w =sm.symbols('w') # wage rate
 R0 = sm.symbols('R_0') # Maximum potential income (no leisure).
-A = sm.symobols('A') # Non labour income
+A = sm.symbols('A') # Non labour income
 
 # objective function
 util= l**alpha *c**beta
