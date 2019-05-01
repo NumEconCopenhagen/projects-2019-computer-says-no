@@ -1,10 +1,16 @@
 ### Preamble
 import numpy as np
-
-### The consumer problem:
+import scipy as sp
+from scipy import linalg
+from scipy import optimize
+from scipy.optimize import Bounds
+import scipy.integrate as integrate
+### The consumer problem
 # 3 ingredients: i) utility function ii) Budget constraint iii) additional constraints
+#Parameters to set: T available time, w function, A non-labour income
 
 ## Utility functions
+
 # Cobb-Douglas:
 def  cobbdouglas(c,l):
     """ Cobb douglas utility function for 2 goods.
@@ -37,16 +43,31 @@ def CES(c,l):
     return u
 
 ## Budget constraint
-R0 =w*h + A     # R0 is potential income if all time is spent
-                # working, h is the hrs worked in a week, and A
-                # is non labour income
-def budget(c,l):
-    return slack=R0 - w*l + - C #, w is wage rate for working, C and l is
-                # consumption and lesiure respectively.
-budget_con={'type':'eq', 'fun'=budget}
+# R0 is potential income if all time is spent
+# working, T the time available, and A
+# is non labour income
+#wage function 
+def wage(l):
+    if l < cut1:
+        return w0
+    elif cut1<= l and l <= cut2:
+        return w1
+    else:
+        return w2
 
-## Time constraint
+maxwage = integrate.quad(wage, 0, T, args= (t1,t2))
+def budget(c,l, w, T,A):
+    R0=maxwage + A
+    slack= R0 - w*l + - C #w is wage rate for working, C and l are
+    return  slack         # consumption and lesiure respectively.
+budget_con={'type':'eq', 'fun':budget}
+
+## Additional constrains / bounds:
+bounds= Bounds([0,np.inf], {0, np.inf})
+
+
  
+
 
 
 
