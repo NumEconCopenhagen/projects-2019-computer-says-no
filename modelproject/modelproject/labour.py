@@ -135,6 +135,7 @@ print('\nx = ',result.x)
 
 
 
+
 #maxwage1 = cut2*w*(1-tax2)+(cut1-cut2)*w*(1-tax1)+(T-cut1)*w*(1-tax0)
 #print(maxwage1)
 #3) Expenditure on leisure:
