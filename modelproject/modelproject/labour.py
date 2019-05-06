@@ -16,8 +16,8 @@ tax2=0.5
 tax1=0.3
 tax0=0
 w=10
-cut1=4
-cut2=7
+cut1=7
+cut2=4
 T=10
 A=10
 # Cobb-Douglas:
@@ -64,17 +64,17 @@ def CES(x):
 
 ## Budget constraint (BC)
 # Three elements are defined for the (BC):
-#1) wage function: returning the after tax wagerate for
-# for a given level of leisure consumption (the more leisure
-#  the lower taxrate = higher wagerate).
-#2) maxwage: returns the wage earned given all time endowed is
-# spent working.
+#1) Wage function: returning the marg. after tax wage for
+# for a given level of leisure consumption (the more leisure consumed
+#  the lower taxrate => higher wagerate). It is also the marg. price of
+# additional leisure.
+#2) Leisure expenditure function: returns the expenditure connected to
+#  buying l units of leisure
 #3) The budget function: calculates the slack in budget given
 #   choices of leisure and consumption (this is the contrained
 #   funtion).
 
-
-#Wage function 
+#1) Wage function 
 def wage(l):
     """ Wage function for a progressive tax system with allowing for two specified kinks
         2 kinks (3 tax brackets).
@@ -92,19 +92,34 @@ def wage(l):
     """
     if l < cut2:
         return w*(1-tax2)
-    elif cut2<= l and l <= cut1:
+    elif cut2<= l and l < cut1:
         return w*(1-tax1)
     else:
         return w*(1-tax0)
 
-# Return labour income if all time is spent working:
-maxwage = cut2*w*(1-tax2)+(cut1-cut2)*w*(1-tax1)+(T-cut1)*w*(1-tax0)
-# Budget constraint
+#2) Return labour income if all time is spent working:
+def leiexp(l,wage):
+    """Returns labour income if T hours is spent working
+    under a given tax system.
+    ARGS:
+    T: Time endowed (int)
+    Wage: Marginal wage-function (incoperating tax system) (function)
+    
+    OUTPUT:
+    maxwage: max labour income (int)
+    """
+    return sp.integrate.quad(wage,0,l)[0]
+print(leiexp(5,wage))
+
+
+#3) Budget constraint
+maxlabinc=leiexp(T,wage) # The maximal labour income = the cost of buying
+                         # T units of leisure.
 def budget(x):
     c=x[0]
     l=x[1]
-    R0= maxwage + A
-    slack= R0 - wage(l)*l - c #w is wage rate for working, c and l are
+    R0= maxlabinc + A
+    slack= R0 - leiexp(l,wage) - c #w is wage rate for working, c and l are
     return  slack       # consumption and lesiure respectively.
 budget_con={'type':'eq', 'fun':budget}
 bounds= Bounds([0,np.inf], {0, T})
@@ -120,3 +135,21 @@ print('\nx = ',result.x)
 
 
 
+#maxwage1 = cut2*w*(1-tax2)+(cut1-cut2)*w*(1-tax1)+(T-cut1)*w*(1-tax0)
+#print(maxwage1)
+#3) Expenditure on leisure:
+#def leisureexp(l,wage):
+#    """ Calculates the expenditure used on leisure for a given
+#    level of leisure demanded as the integral of the product of 
+#    the wage function and leisure demanded.
+#    
+#    ARGS:
+#    x: Leisure demandend (int)
+#    wage: Marginal wage (function)
+#
+#    OUTPUT:
+#    leiexp: Expenditure on leisure (int)
+#    """
+#    exp = wage*x
+#    return sp.integrate.quad(exp,0,l)[0]
+#print(leisureexp(3,wage))
