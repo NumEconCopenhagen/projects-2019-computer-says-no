@@ -154,3 +154,37 @@ print('\nx = ',result.x)
 #    exp = wage*x
 #    return sp.integrate.quad(exp,0,l)[0]
 #print(leisureexp(3,wage))
+
+def solver_prog(util, par):
+    """ Runs SLSQP optimizer for a parameterization for each piecewise linear part of the budget constraint,
+        and evaluates the kink points aswell. 
+   INPUT:
+   Util: Utility function of agents.
+   par: Parameters of the utility function (tuple if multipile); For cobddouglas an args=alpha (bt. 0 and 1),
+                                 For CES a 2-tuple, where par[0]=a  and par[1]=r, 0<=a<=1 and r <=1.
+   """
+    # Optimize behaviour in no tax bracket (l_bot < l < T):
+    best_notax= optimize.minimize(util,guess,args=par,
+                             method='SLSQP',
+                             constraints=[budget_func(wage_prog,maxlabinc_prog,leiexp_prog)],
+                             options={'disp':False}, bounds=Bounds((0,l_bot), (np.inf, T)))
+    # Optimize behaviour in low tax bracket ( l_top < l <l_bot):
+    best_lowtax = optimize.minimize(util,guess,args=par,
+                             method='SLSQP',
+                             constraints=[budget_func(wage_prog,maxlabinc_prog,leiexp_prog)],
+                             options={'disp':False}, bounds=Bounds((0,l_top), (np.inf, l_bot)))
+    #Optimize behaviour in top tax bracket ( 0 < l < l_top):
+    best_hightax = optimize.minimize(util,guess,args=par,
+                             method='SLSQP',
+                             constraints=[budget_func(wage_prog,maxlabinc_prog,leiexp_prog)],
+                             options={'disp':False}, bounds=Bounds((0,0), (np.inf, l_top)))
+    #Evaluate utility at kink point between no tax and low tax (util(l=l_bot, c=R_0-leiexp(l_bot,wage)):
+    Kink_bot = util(goods_bot,l_bot) 
+    kink_top= util(goods_top,l_top)
+    
+    # Evaluate candidates and choose optimal bundle
+    candidates=np.array([[best_notax.fun, best_notax.x[0], best_notax.x[1]], [best_lowtax.fun, best_lowtax.x[0], best_lowtax.x[1]], [best_hightax.fun,best_hightax.x[0],best_hightax.x[1]], 
+                        [Kink_bot, x_bot[0],x_bot[1]], [kink_top, x_top[0],x_top[1]]]) # Create array with all candidates where first element is utility
+                                                                                      # 2nd is the consumption bundle as a tuple.
+    best_cand=np.argmax(candidates,axis=0) # Restract row number for best bundle.
+    return (candidates[best_cand[0],1],candidates[best_cand[0],2])
