@@ -7,6 +7,30 @@ import scipy.integrate as integrate
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
+# Cobb-Douglas:
+def  cobbdouglas(x, par):
+    """ Cobb douglas utility function for 2 goods.
+    
+    INPUT:
+    
+    Parameters
+    par (alpha) : relative preference for consumption to leisure, 0<alpha<1
+    
+    Consumption bundle
+    x           : Consumption tuple
+      x[0]      : consumption
+      x[1]      : leisure
+
+    OUTPUT
+    u           : utility (negative)"""
+    
+    c=x[0]
+    l=x[1]
+    alpha=par
+    
+    u= (c**alpha)*l**(1-alpha)
+    return -u
+
 # CES utility function:
 def CES(x, par):
     """ CES utility function for 2 goods.
