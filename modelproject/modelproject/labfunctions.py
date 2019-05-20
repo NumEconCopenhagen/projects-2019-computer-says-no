@@ -4,9 +4,37 @@ from scipy import linalg
 from scipy import optimize
 from scipy.optimize import Bounds
 import scipy.integrate as integrate
-%matplotlib inline
 import matplotlib.pyplot as plt
 from matplotlib import cm
+
+# CES utility function:
+def CES(x, par):
+    """ CES utility function for 2 goods.
+    INPUT:
+    
+    parameters
+    par (2-tuple):
+        par[0]   : a
+        par[1]   : r
+             r   : 1/(1-r) is the elasticity of substitution, r<=1.
+             a   : relative preference for consumption (a=1 if a unit of consumption gives the same utility as a unit lesiure),
+                    0<=a<=1.
+    
+    consumption bundle
+    x (2-tuple)  :
+          x[0]   : consumption of goods (c)
+          x[1]   : leisure (l)
+
+    OUTPUT:
+            u    : utility (neg) """
+    
+    a=par[0]
+    r=par[1]
+    c=x[0]
+    l=x[1]
+    
+    u=(a*c**r + (1-a)*l**r)**(1/r)
+    return -u
 
 def max_u(util, wage, maxlabinc, leiexp,par):
     """Return utility for optimal consumption bundle.
